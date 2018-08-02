@@ -76,3 +76,17 @@ func (session *Session) DeleteByUUID() (err error) {
 	stmt.Exec(session.UUID)
 	return err
 }
+
+func (user *User) CreateUser() (err error) {
+	preparedStatement := "insert into users (uuid, name, email, password, created_at) values($1, $2, $3, $4, $5) returning id, uuid, created_at"
+	stmt, err := DB.Prepare(preparedStatement)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		err = stmt.Close()
+	}()
+
+	err = stmt.QueryRow(createUUID(), user.Name, user.Email, user.Password, time.Now()).Scan(&user.ID, &user.UUID, &user.CreatedAt)
+	return err
+}

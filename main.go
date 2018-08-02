@@ -20,6 +20,8 @@ func main() {
 
 	// defined in route_auth.go
 	mux.HandleFunc("/login", handlers.Login)
+	mux.HandleFunc("/signup", handlers.Signup)
+	mux.HandleFunc("/signup_account", handlers.SignupAccount)
 
 	// create a server
 	server := &http.Server{
