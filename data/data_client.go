@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	_ "github.com/lib/pq"
 	"log"
 	"fmt"
 	"crypto/sha1"
@@ -12,11 +13,10 @@ var DB *sql.DB
 
 func init() {
 	var err error
-	DB, err = sql.Open("postgres", "dbname=chitchat sslmode=disable")
+	DB, err = sql.Open("postgres", "dbname=chitchat sslmode=disable password=welcome")
 	if err != nil {
 		log.Fatal(err)
 	}
-	print(err)
 }
 
 

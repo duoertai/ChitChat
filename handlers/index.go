@@ -8,7 +8,7 @@ import (
 func Index(writer http.ResponseWriter, request *http.Request) {
 	threads, err := data.GetAllThreads()
 	if err != nil {
-		error_message(writer, request, "Failed to get threads")
+		error_message(writer, request, err.Error())
 	}
 
 	_, err = checkSession(writer, request)

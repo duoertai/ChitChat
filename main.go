@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"time"
+	"ChitChat/handlers"
 )
 
 func main() {
@@ -13,8 +14,7 @@ func main() {
 	mux.Handle("/static/", http.StripPrefix("/static/", files))
 
 	// index
-	//mux.HandleFunc("/", )
-
+	mux.HandleFunc("/", handlers.Index)
 
 	// create a server
 	server := &http.Server{
