@@ -18,6 +18,9 @@ func main() {
 	// error
 	mux.HandleFunc("/err", handlers.Err)
 
+	// defined in route_auth.go
+	mux.HandleFunc("/login", handlers.Login)
+
 	// create a server
 	server := &http.Server{
 		Addr: config.Address,
