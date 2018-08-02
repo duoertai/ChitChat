@@ -1,7 +1,19 @@
 package handlers
 
-import "net/http"
+import (
+	"net/http"
+	"ChitChat/data"
+)
 
 func Index(writer http.ResponseWriter, request *http.Request) {
-	
+	threads, err := data.GetAllThreads()
+	if err != nil {
+		error_message(writer, request, "Failed to get threads")
+	}
+
+	_, err = checkSession(writer, request)
+	if err != nil {
+		generateHTML(writer, threads, "layout", "public.navbar", "index")
+	}
+	generateHTML(writer, threads, "layout", "private.navbar", "index")
 }

@@ -13,7 +13,7 @@ func main() {
 	mux.Handle("/static/", http.StripPrefix("/static/", files))
 
 	// index
-	mux.HandleFunc("/", )
+	//mux.HandleFunc("/", )
 
 
 	// create a server
