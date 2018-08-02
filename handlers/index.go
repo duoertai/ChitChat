@@ -14,6 +14,7 @@ func Index(writer http.ResponseWriter, request *http.Request) {
 	_, err = checkSession(writer, request)
 	if err != nil {
 		generateHTML(writer, threads, "layout", "public.navbar", "index")
+	} else {
+		generateHTML(writer, threads, "layout", "private.navbar", "index")
 	}
-	generateHTML(writer, threads, "layout", "private.navbar", "index")
 }
