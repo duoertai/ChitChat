@@ -29,7 +29,7 @@ func (user *User) CreateSession() (session Session, err error) {
 		err = stmt.Close()
 	}()
 
-	err = stmt.QueryRow(createUUID(), user.Email, user.ID, time.Now()).Scan(&session.ID, &session.UUID, &session.Email, &session.CreatedAt)
+	err = stmt.QueryRow(createUUID(), user.Email, user.ID, time.Now()).Scan(&session.ID, &session.UUID, &session.Email, &session.UserID, &session.CreatedAt)
 	return session, err
 }
 
@@ -87,6 +87,21 @@ func (user *User) CreateUser() (err error) {
 		err = stmt.Close()
 	}()
 
-	err = stmt.QueryRow(createUUID(), user.Name, user.Email, user.Password, time.Now()).Scan(&user.ID, &user.UUID, &user.CreatedAt)
+	err = stmt.QueryRow(createUUID(), user.Name, user.Email, Encrypt(user.Password), time.Now()).Scan(&user.ID, &user.UUID, &user.CreatedAt)
 	return err
+}
+
+func GetUserByEmail(email string) (user User, err error) {
+	user = User{}
+	preparedStatement := "select id, uuid, name, email, password, created_at from users where email = $1"
+	stmt, err := DB.Prepare(preparedStatement)
+	if err != nil {
+		return user, err
+	}
+	defer func() {
+		err = stmt.Close()
+	}()
+
+	err = stmt.QueryRow(email).Scan(&user.ID, &user.UUID, &user.Name, &user.Email, &user.Password, &user.CreatedAt)
+	return user, err
 }
