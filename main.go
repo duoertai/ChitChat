@@ -20,6 +20,7 @@ func main() {
 
 	// defined in route_auth.go
 	mux.HandleFunc("/login", handlers.Login)
+	mux.HandleFunc("/logout", handlers.Logout)
 	mux.HandleFunc("/signup", handlers.Signup)
 	mux.HandleFunc("/signup_account", handlers.SignupAccount)
 	mux.HandleFunc("/authenticate", handlers.Authenticate)

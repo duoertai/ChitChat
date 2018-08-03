@@ -24,6 +24,7 @@ func checkSession(writer http.ResponseWriter, request *http.Request) (session da
 		UUID: cookie.Value,
 	}
 
+	fmt.Println("session uuid: " + cookie.Value)
 	valid, err := session.CheckSession()
 	if err != nil {
 		return session, err

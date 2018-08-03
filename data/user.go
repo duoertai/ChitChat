@@ -59,8 +59,9 @@ func (session *Session) CheckSession() (valid bool, err error) {
 		err = stmt.Close()
 	}()
 
+	err = stmt.QueryRow(session.UUID).Scan(&session.ID, &session.UUID, &session.Email, &session.UserID, &session.CreatedAt)
 
-	return valid, err
+	return session.ID != 0, err
 }
 
 func (session *Session) DeleteByUUID() (err error) {
