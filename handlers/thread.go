@@ -1,6 +1,9 @@
 package handlers
 
-import "net/http"
+import (
+	"net/http"
+	"ChitChat/data"
+)
 
 func NewThread(writer http.ResponseWriter, request *http.Request) {
 	_, err := checkSession(writer, request)
@@ -34,5 +37,22 @@ func CreateThread(writer http.ResponseWriter, request *http.Request) {
 			return
 		}
 		http.Redirect(writer, request, "/", 302)
+	}
+}
+
+func ReadThread(writer http.ResponseWriter, request *http.Request) {
+	values := request.URL.Query()
+	uuid := values.Get("id")
+	thread, err := data.GetThreadByUUID(uuid)
+	if err != nil {
+		http.Redirect(writer, request, "/err?msg=Cannot%20create%20thread", 302)
+		return
+	} else {
+		_, err := checkSession(writer, request)
+		if err != nil {
+			generateHTML(writer, &thread, "layout", "public.navbar", "public.thread")
+		} else {
+			generateHTML(writer, &thread, "layout", "private.navbar", "private.thread")
+		}
 	}
 }

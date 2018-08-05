@@ -99,3 +99,11 @@ func GetAllThreads() (threads []Thread, err error) {
 	fmt.Println(threads)
 	return threads, err
 }
+
+// Get a thread by the UUID
+func GetThreadByUUID(uuid string) (thread Thread, err error) {
+	thread = Thread{}
+	err = DB.QueryRow("SELECT id, uuid, topic, user_id, created_at FROM threads WHERE uuid = $1", uuid).
+		Scan(&thread.ID, &thread.UUID, &thread.Topic, &thread.UserID, &thread.CreatedAt)
+	return
+}
