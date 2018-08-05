@@ -62,7 +62,21 @@ func (thread *Thread) User() (user User) {
 	return user
 }
 
-
+func (thread *Thread) Posts() (posts []Post, err error) {
+	rows, err := DB.Query("SELECT id, uuid, body, user_id, thread_id, created_at FROM posts where thread_id = $1", thread.ID)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		post := Post{}
+		if err = rows.Scan(&post.ID, &post.UUID, &post.Body, &post.UserID, &post.ThreadID, &post.CreatedAt); err != nil {
+			return
+		}
+		posts = append(posts, post)
+	}
+	rows.Close()
+	return
+}
 
 func (post *Post) CreatedAtDate() string {
 	return post.CreatedAt.Format(layoutFormat)

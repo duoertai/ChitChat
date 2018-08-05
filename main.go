@@ -27,6 +27,7 @@ func main() {
 
 	mux.HandleFunc("/thread/new", handlers.NewThread)
 	mux.HandleFunc("/thread/create", handlers.CreateThread)
+	mux.HandleFunc("/thread/post", handlers.PostThread)
 	mux.HandleFunc("/thread/read", handlers.ReadThread)
 
 	// create a server

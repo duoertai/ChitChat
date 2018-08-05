@@ -119,6 +119,18 @@ func (user *User) CreateThread(topic string) (thread Thread, err error) {
 	return
 }
 
+func (user *User) CreatePost(thread Thread, body string) (post Post, err error) {
+	statement := "insert into posts (uuid, body, user_id, thread_id, created_at) values ($1, $2, $3, $4, $5) returning id, uuid, body, user_id, thread_id, created_at"
+	stmt, err := DB.Prepare(statement)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+	// use QueryRow to return a row and scan the returned id into the Session struct
+	err = stmt.QueryRow(createUUID(), body, user.ID, thread.ID, time.Now()).Scan(&post.ID, &post.UUID, &post.Body, &post.UserID, &post.ThreadID, &post.CreatedAt)
+	return
+}
+
 func GetUserByEmail(email string) (user User, err error) {
 	user = User{}
 	preparedStatement := "select id, uuid, name, email, password, created_at from users where email = $1"

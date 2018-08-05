@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"ChitChat/data"
+	"fmt"
 )
 
 func NewThread(writer http.ResponseWriter, request *http.Request) {
@@ -56,3 +57,37 @@ func ReadThread(writer http.ResponseWriter, request *http.Request) {
 		}
 	}
 }
+
+func PostThread(writer http.ResponseWriter, request *http.Request) {
+	session, err := checkSession(writer, request)
+	if err != nil {
+		http.Redirect(writer, request, "/login", 302)
+	} else {
+		err = request.ParseForm()
+		if err != nil {
+			http.Redirect(writer, request, "/err?msg=Cannot%20parse%20form", 302)
+			return
+		}
+
+		user, err := session.GetUserFromSession()
+		if err != nil {
+			http.Redirect(writer, request, "/err?msg=Cannot%20find%20user", 302)
+			return
+		}
+
+		body := request.PostFormValue("body")
+		uuid := request.PostFormValue("uuid")
+		thread, err := data.GetThreadByUUID(uuid)
+		if err != nil {
+			http.Redirect(writer, request, "/err?msg=Cannot%20find%20thread", 302)
+			return
+		}
+		if _, err := user.CreatePost(thread, body); err != nil {
+			http.Redirect(writer, request, "/err?msg=Cannot%20create%20post", 302)
+			return
+		}
+		url := fmt.Sprint("/thread/read?id=", uuid)
+		http.Redirect(writer, request, url, 302)
+	}
+}
+
