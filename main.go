@@ -26,6 +26,7 @@ func main() {
 	mux.HandleFunc("/authenticate", handlers.Authenticate)
 
 	mux.HandleFunc("/thread/new", handlers.NewThread)
+	mux.HandleFunc("/thread/create", handlers.CreateThread)
 
 	// create a server
 	server := &http.Server{

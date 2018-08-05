@@ -78,6 +78,21 @@ func (session *Session) DeleteByUUID() (err error) {
 	return err
 }
 
+func (session *Session) GetUserFromSession() (user User, err error) {
+	user = User{}
+
+	preparedStatement := "select id, uuid, name, email, created_at from users where id = $1"
+	stmt, err := DB.Prepare(preparedStatement)
+	if err != nil {
+	}
+	defer func() {
+		err = stmt.Close()
+	}()
+
+	err = stmt.QueryRow(session.UserID).Scan(&user.ID, &user.UUID, &user.Name, &user.Email, &user.CreatedAt)
+	return user, err
+}
+
 func (user *User) CreateUser() (err error) {
 	preparedStatement := "insert into users (uuid, name, email, password, created_at) values($1, $2, $3, $4, $5) returning id, uuid, created_at"
 	stmt, err := DB.Prepare(preparedStatement)
@@ -90,6 +105,18 @@ func (user *User) CreateUser() (err error) {
 
 	err = stmt.QueryRow(createUUID(), user.Name, user.Email, Encrypt(user.Password), time.Now()).Scan(&user.ID, &user.UUID, &user.CreatedAt)
 	return err
+}
+
+func (user *User) CreateThread(topic string) (thread Thread, err error) {
+	statement := "insert into threads (uuid, topic, user_id, created_at) values ($1, $2, $3, $4) returning id, uuid, topic, user_id, created_at"
+	stmt, err := DB.Prepare(statement)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+	// use QueryRow to return a row and scan the returned id into the Session struct
+	err = stmt.QueryRow(createUUID(), topic, user.ID, time.Now()).Scan(&thread.ID, &thread.UUID, &thread.Topic, &thread.UserID, &thread.CreatedAt)
+	return
 }
 
 func GetUserByEmail(email string) (user User, err error) {

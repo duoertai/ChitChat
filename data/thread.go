@@ -1,6 +1,9 @@
 package data
 
-import "time"
+import (
+	"time"
+	"fmt"
+)
 
 const layoutFormat = "Jan 2, 2006 at 3:04pm"
 
@@ -24,6 +27,42 @@ type Post struct {
 func (thread *Thread) CreatedAtDate() string {
 	return thread.CreatedAt.Format(layoutFormat)
 }
+
+func (thread *Thread) NumReplies() (count int) {
+	rows, err := DB.Query("SELECT count(*) FROM posts where thread_id = $1", thread.ID)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		if err = rows.Scan(&count); err != nil {
+			return
+		}
+	}
+	rows.Close()
+	return
+}
+
+func (thread *Thread) User() (user User) {
+	user = User{}
+
+	preparedStatement := "SELECT id, uuid, name, email, created_at FROM users WHERE id = $1"
+	stmt, err := DB.Prepare(preparedStatement)
+	if err != nil {
+		return user
+	}
+	defer func() {
+		err = stmt.Close()
+	}()
+
+	err = stmt.QueryRow(thread.UserID).Scan(&user.ID, &user.UUID, &user.Name, &user.Email, &user.CreatedAt)
+	if err != nil {
+		return User{}
+	}
+
+	return user
+}
+
+
 
 func (post *Post) CreatedAtDate() string {
 	return post.CreatedAt.Format(layoutFormat)
@@ -57,5 +96,6 @@ func GetAllThreads() (threads []Thread, err error) {
 		return threads, err
 	}
 
+	fmt.Println(threads)
 	return threads, err
 }
